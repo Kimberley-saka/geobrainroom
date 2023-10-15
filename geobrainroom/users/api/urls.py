@@ -11,6 +11,7 @@ from .views import MyTokenObtainPairView
 urlpatterns = [
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('create_user/', views.add_user),
+    path('add/', views.add_user),
+    path('delete/', views.delete_user),
     path('', views.get_routes)
 ]
