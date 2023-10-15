@@ -1,6 +1,9 @@
-//import React from 'react'
+import {useContext} from 'react'
+import AuthContext from '../context/AuthContext'
+
 
 const LoginPage = () => {
+  let {loginUser} = useContext(AuthContext)
   return (
     <div className='flex flex-col gap-5 justify-center items-center mt-24'>
       <div className='flex flex-col gap-5 items-start
@@ -10,7 +13,7 @@ const LoginPage = () => {
           <p className='text-lg font-bold text-white'>Welcome</p>
         </div>
       
-      <form className='flex flex-col gap-5 w-full px-4'>
+      <form onSubmit={loginUser} className='flex flex-col gap-5 w-full px-4'>
         <input type='text' name='username' placeholder='Username'
         className='border-2 border-gray-300 rounded-lg h-10 pl-2'
         ></input>
