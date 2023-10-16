@@ -7,8 +7,9 @@ from rest_framework.decorators import api_view
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.models import User
 from .serializers import UserSerialiser
-from users.models import Users
+
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -50,15 +51,15 @@ def add_user(request):
     """
     create new user
     """
-    user_serializer = UserSerialiser(data=request.data)
-    if user_serializer.is_valid(): #check if data passed is valid
-        user_serializer.save()
+    new_user = UserSerialiser(data=request.data) # Serialize the incoming data
+    if new_user.is_valid(): #check if data passed is valid
+        new_user.save()
 
     else:
-        error = user_serializer.errors
+        error = new_user.errors
         return Response(f'Oops and error occured: {error}', status=status.HTTP_400_BAD_REQUEST)
     
-    return Response(user_serializer.data)
+    return Response(new_user.data)
 
 @api_view(['DELETE'])
 @staff_member_required
@@ -68,7 +69,7 @@ def delete_user(request,):
         if pk is None or not isinstance(pk, int):
             return Response({'Invalid or missing user ID'},
                             status=status.HTTP_400_BAD_REQUEST)
-        user = Users.objects.get(pk=pk) # Search for user in db
+        user = User.objects.get(pk=pk) # Search for user in db
     except user.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -89,4 +90,3 @@ def update_password(request):
     if password is None or not isinstance(password, str):
         return Response({'Invalid or missing user password'},
                             status=status.HTTP_400_BAD_REQUEST)
-    

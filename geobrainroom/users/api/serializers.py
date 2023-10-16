@@ -14,4 +14,4 @@ class UserSerialiser(serializers.ModelSerializer):
         __summary__
         """
         model = Users
-        fields = '__all__'
+        fields = 'username', 'email', 'password'
