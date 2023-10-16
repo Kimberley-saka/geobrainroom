@@ -1,3 +1,5 @@
+"""
+"""
 from django.db import models
 
 class Courses(models.Model):
@@ -8,15 +10,28 @@ class Courses(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, unique=True)
 
 
-class lessons(models.Model):
+    class Meta:
+        db_table = 'courses'
+
+
+class Lessons(models.Model):
     """
     __summary__
     """
-    pass
+    lesson_name = models.CharField(max_length=250)
+    description = models.TextField(max_length=1000)
+
+
+    class Meta:
+        db_table = 'lessons'
 
 
 class Enrol(models.Model):
     """
     __summary__
     """
-    pass
+    enrolled_at = models.DateTimeField(auto_now_add=True)
+
+
+    class Meta:
+        db_table = 'enrol'
