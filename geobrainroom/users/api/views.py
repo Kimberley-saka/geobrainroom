@@ -40,7 +40,7 @@ def get_routes(request):
     routes = [
         'api/token',
         'api/token/refresh',
-        'api/create_user'
+        'api/add'
     ]
     return Response(routes)
 
@@ -62,15 +62,31 @@ def add_user(request):
 
 @api_view(['DELETE'])
 @staff_member_required
-def delete_user(request):
+def delete_user(request,):
     try:
         pk = request.data.get('pk', None)
         if pk is None or not isinstance(pk, int):
-            return Response({'error': 'Invalid or missing user ID'},
+            return Response({'Invalid or missing user ID'},
                             status=status.HTTP_400_BAD_REQUEST)
-        user = Users.objects.get(pk=pk)
+        user = Users.objects.get(pk=pk) # Search for user in db
     except user.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
     user.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['POST'])
+def update_password(request):
+    """
+    __summary__
+    """
+    email = request.data.get('email', None)
+    password = request.data.get('password', None)
+
+    if email is None or not isinstance(email, str):
+        return Response({'Invalid or missing user email'},
+                            status=status.HTTP_400_BAD_REQUEST)
+    if password is None or not isinstance(password, str):
+        return Response({'Invalid or missing user password'},
+                            status=status.HTTP_400_BAD_REQUEST)
+    
