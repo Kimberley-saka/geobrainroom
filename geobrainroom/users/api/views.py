@@ -53,6 +53,7 @@ def add_user(request):
     """
     new_user = UserSerialiser(data=request.data) # Serialize the incoming data
     if new_user.is_valid(): #check if data passed is valid
+        
         new_user.save()
 
     else:
@@ -62,14 +63,14 @@ def add_user(request):
     return Response(new_user.data)
 
 @api_view(['DELETE'])
-@staff_member_required
-def delete_user(request,):
+def delete_user(request, pk):
     try:
         pk = request.data.get('pk', None)
         if pk is None or not isinstance(pk, int):
             return Response({'Invalid or missing user ID'},
                             status=status.HTTP_400_BAD_REQUEST)
-        user = User.objects.get(pk=pk) # Search for user in db
+        else:
+            user = User.objects.get(pk=pk) # Search for user in db
     except user.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 

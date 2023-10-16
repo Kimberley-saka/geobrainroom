@@ -14,4 +14,4 @@ class UserSerialiser(serializers.ModelSerializer):
         __summary__
         """
         model = Users
-        fields = 'username', 'email', 'password'
+        fields = ['username', 'email', 'password']
