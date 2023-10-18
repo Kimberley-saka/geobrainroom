@@ -7,7 +7,9 @@ from . import views
 urlpatterns = [
     path('courses/', views.get_courses),
     path('courses/<int:id>/', views.get_specific_course),
-    path('courses/<int:course_id>/lessons/', views.get_lessons)
+    path('courses/<int:course_id>/lessons/', views.get_lessons),
+    path('lessons/<int:id>/', views.get_specific_lesson),
+    path('instructor/courses', views.add_course)
 ]
 
 if settings.DEBUG:

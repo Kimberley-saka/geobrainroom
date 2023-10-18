@@ -4,7 +4,8 @@ views
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ValidationError
+from django.contrib.admin.views.decorators import staff_member_required
 from courses.models import Courses, Lessons
 from .serializers import CourseSerialiser, LessonSerializer
 
@@ -24,7 +25,7 @@ def get_courses(request):
 @api_view(['GET'])
 def get_specific_course(request, id):
     """
-    get list of all available courses
+    get a course
     """
     if id is None or not isinstance(id, int):
         return Response('Invalid or missing course id', status=status.HTTP_400_BAD_REQUEST)
@@ -53,3 +54,28 @@ def get_lessons(request, course_id):
 
     serializer = LessonSerializer(lessons, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def get_specific_lesson(request, id):
+    """
+    Retrieve contents of a lesson
+    """
+    lesson = Lessons.objects.filter(id=id).first()
+    serializer = LessonSerializer(lesson)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+#@staff_member_required
+def add_course(request):
+    """
+    Create new course
+    """
+    try:
+        new_course = CourseSerialiser(data=request.data)
+        if new_course.is_valid():
+            new_course.save()
+        return Response(new_course.data)
+    
+    except ValidationError:
+        return Response('Invalid data', status.HTTP_422_UNPROCESSABLE_ENTITY)

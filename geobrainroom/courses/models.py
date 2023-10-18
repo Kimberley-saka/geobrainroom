@@ -28,6 +28,7 @@ class Lessons(models.Model):
     )
     lesson_name = models.CharField(max_length=250)
     files = models.FileField(upload_to='documents/')
+    description = models.TextField(max_length=1000, null=True)
 
  
     class Meta:
