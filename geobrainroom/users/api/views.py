@@ -43,7 +43,7 @@ def get_routes(request):
         'api/token/refresh',
         'api/add',
         'api/<int:pk>/delete',
-        'api/'
+        '/api/courses',
     ]
     return Response(routes)
 
