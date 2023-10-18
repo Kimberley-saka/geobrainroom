@@ -6,7 +6,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.contrib.admin.views.decorators import staff_member_required
+from django.core.exceptions import ObjectDoesNotExist
+#from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
 from .serializers import UserSerialiser
 
@@ -66,14 +67,12 @@ def add_user(request):
 
 @api_view(['DELETE'])
 def delete_user(request, pk):
-    try:
-        pk = request.data.get('pk', None)
-        if pk is None or not isinstance(pk, int):
+    if pk is None or not isinstance(pk, int):
             return Response({'Invalid or missing user ID'},
                             status=status.HTTP_400_BAD_REQUEST)
-        else:
-            user = User.objects.get(pk=pk) # Search for user in db
-    except user.DoesNotExist:
+    try:
+        user = User.objects.get(pk=pk) # Search for user in db
+    except ObjectDoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
     user.delete()
