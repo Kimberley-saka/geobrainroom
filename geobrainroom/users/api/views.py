@@ -45,6 +45,7 @@ def get_routes(request):
         'api/add',
         'api/<int:pk>/delete',
         '/api/courses',
+        'courses/<int:pk>/lessons/',
     ]
     return Response(routes)
 

@@ -1,8 +1,14 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path
 from . import views
 
 
 urlpatterns = [
     path('courses/', views.get_courses),
-    path('courses/<int:pk>/', views.get_specific_course)
+    path('courses/<int:id>/', views.get_specific_course),
+    path('courses/<int:course_id>/lessons/', views.get_lessons)
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
