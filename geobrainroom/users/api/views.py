@@ -41,7 +41,9 @@ def get_routes(request):
     routes = [
         'api/token',
         'api/token/refresh',
-        'api/add'
+        'api/add',
+        'api/<int:pk>/delete',
+        'api/'
     ]
     return Response(routes)
 
@@ -51,9 +53,9 @@ def add_user(request):
     """
     create new user
     """
+    password = request.data.get('password', None)
     new_user = UserSerialiser(data=request.data) # Serialize the incoming data
     if new_user.is_valid(): #check if data passed is valid
-        
         new_user.save()
 
     else:
