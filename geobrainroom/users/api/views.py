@@ -55,7 +55,6 @@ def add_user(request):
     """
     create new user
     """
-    password = request.data.get('password', None)
     new_user = UserSerialiser(data=request.data) # Serialize the incoming data
     if new_user.is_valid(): #check if data passed is valid
         new_user.save()
@@ -79,7 +78,7 @@ def delete_user(request, pk):
     user.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['POST'])
+@api_view(['PUT'])
 def update_password(request):
     """
     __summary__

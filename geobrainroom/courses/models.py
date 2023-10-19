@@ -9,7 +9,7 @@ class Courses(models.Model):
     __summary__
     """
     course_name = models.CharField(max_length=250, unique=True)
-    description = models.TextField(max_length=1000)
+    description = models.TextField(max_length=1000, null=True)
     created_at = models.DateTimeField(auto_now_add=True, unique=True)
 
 
@@ -27,7 +27,7 @@ class Lessons(models.Model):
         blank=False
     )
     lesson_name = models.CharField(max_length=250)
-    files = models.FileField(upload_to='documents/')
+    files = models.FileField(upload_to='documents/', null=True)
     description = models.TextField(max_length=1000, null=True)
 
  
