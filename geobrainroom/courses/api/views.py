@@ -75,26 +75,38 @@ def add_course(request):
     """
     Create new course
     """
+    course_name = request.data.get('course_name')
+
+    if Courses.objects.filter(course_name=course_name).exists():
+        return Response({'Course already exists'})
+
     new_course = CourseSerialiser(data=request.data)
     if new_course.is_valid():
         new_course.save()
     
     else:
-        raise ValidationError
+        raise ValidationError('Invalid data entered')
+    
     return Response(new_course.data)
 
 @api_view(['PUT'])
-#@staff_member_required
-def update_course(request, id):
+# @staff_member_required
+def update_course(request):
     """
-    Update
+    Update data
     """
-    course_to_update = get_object_or_404(Courses, id=id)
-    serializer = CourseSerialiser(course_to_update, data=request.data)
+    course_name = request.data.get('course_name')
 
+    try:
+        course = Courses.objects.get(course_name=course_name)
+    except Courses.DoesNotExist:
+        return Response({'error': 'Course does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = CourseSerialiser(course, data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -103,12 +115,18 @@ def add_lesson(request):
     """
     Create a new lesson
     """
-    try:
-        new_lesson = LessonSerializer(data=request.data)
-        if new_lesson.is_valid():
-            new_lesson.save()
+    lesson_name = request.data.get('lesson_name')
 
-    except Exception as e:
-        print(e)
+    if Lessons.objects.filter(lesson_name=lesson_name).exists():
+        return Response({'Lesson already exists'})
+    
+    new_lesson = LessonSerializer(data=request.data)
 
+    if new_lesson.is_valid():
+        new_lesson.save()
+
+    else:
+        raise ValidationError('Invalid data entered')
+    
     return Response(new_lesson.data)
+
