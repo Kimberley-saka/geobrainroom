@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.core.exceptions import ValidationError
 from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import get_object_or_404
 from courses.models import Courses, Lessons
 from .serializers import CourseSerialiser, LessonSerializer
 
@@ -129,4 +128,26 @@ def add_lesson(request):
         raise ValidationError('Invalid data entered')
     
     return Response(new_lesson.data)
+
+
+@api_view(['PUT'])
+# @staff_member_required
+def update_lesson(request):
+    """
+    Update data
+    """
+    lesson_name = request.data.get('lesson_name')
+
+    try:
+        lesson = Lessons.objects.get(lesson_name=lesson_name)
+    except Lessons.DoesNotExist:
+        return Response({'error': 'lesson doesnt exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = LessonSerializer(lesson, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 

@@ -9,9 +9,10 @@ urlpatterns = [
     path('courses/<int:id>/', views.get_specific_course),
     path('courses/<int:course_id>/lessons/', views.get_lessons),
     path('lessons/<int:id>/', views.get_specific_lesson),
-    path('instructor/courses/', views.add_course),
+    path('instructor/courses/add', views.add_course),
     path('instructor/courses/update/', views.update_course),
-    path('instructor/lessons/', views.add_lesson),
+    path('instructor/lessons/add/', views.add_lesson),
+    path('instructor/lessons/update/', views.update_lesson),
 ]
 
 if settings.DEBUG:
