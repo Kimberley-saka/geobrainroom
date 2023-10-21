@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.core.exceptions import ValidationError
 from django.contrib.admin.views.decorators import staff_member_required
-from courses.models import Courses, Lessons
+from courses.models import Courses, Lessons, Progress
 from .serializers import CourseSerialiser, LessonSerializer
 
 
@@ -149,3 +149,12 @@ def update_lesson(request):
         return Response(serializer.data)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_progress(request, user_id):
+    """
+    Get the progess of a user
+    """
+    if 
+
