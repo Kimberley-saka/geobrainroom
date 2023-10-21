@@ -54,3 +54,30 @@ class Enroll(models.Model):
 
     class Meta:
         db_table = 'enroll'
+
+
+class Progress(models.Model):
+    """
+    For progress tracking
+    """
+    lesson = models.ForeignKey(
+        Lessons,
+        on_delete=models.CASCADE,
+        blank=False
+    )
+
+    user = models.ForeignKey(
+        Users,
+        on_delete=models.CASCADE,
+        blank=False
+    )
+
+    completed = models.BooleanField(null=True)
+    completed_at = models.DateTimeField(auto_now_add=True)
+
+
+    class Meta:
+        """
+        """
+
+        db_table = "progress"
