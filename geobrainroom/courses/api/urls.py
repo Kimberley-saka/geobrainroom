@@ -15,5 +15,5 @@ urlpatterns = [
     path('instructor/lessons/add/', views.add_lesson),
     path('instructor/lessons/update/', views.update_lesson),
     path('user/<int:user_id>/lessons/<lesson_id>/complete/', views.add_progress),
-    path('user/<int:user_id>/progress', views.get_progress)
+    path('user/<int:user_id>/progress/', views.get_progress)
 ]

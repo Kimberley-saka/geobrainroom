@@ -168,12 +168,11 @@ def get_progress(request):
 
 @api_view(['POST'])
 #@login_required
-def add_progress(request):
+def add_progress(request, user_id):
     """
     Mark lesson as complete
     """
-    user = request.data.get('user')
-    if Progress.objects.filter(user=user).exists():
+    if Progress.objects.filter(user_id=user_id).exists():
         return Response({'Progress for this lesson already exists'})
 
     new_progress = ProgressSerializer(data=request.data)
@@ -184,3 +183,10 @@ def add_progress(request):
     
     return Response(new_progress.data)
 
+
+@api_view(['GET'])
+def enrolled_in(request):
+    """
+    Get the courses a user is enrolled in
+    """
+    pass
