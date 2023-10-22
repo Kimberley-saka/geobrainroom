@@ -55,6 +55,10 @@ def add_user(request):
     """
     create new user
     """
+    username = request.data.get('username')
+    email = request.data.get('email')
+    password = request.data.get('password')
+    
     new_user = UserSerialiser(data=request.data) # Serialize the incoming data
     if new_user.is_valid(): #check if data passed is valid
         new_user.save()
@@ -92,3 +96,4 @@ def update_password(request):
     if password is None or not isinstance(password, str):
         return Response({'Invalid or missing user password'},
                             status=status.HTTP_400_BAD_REQUEST)
+                            

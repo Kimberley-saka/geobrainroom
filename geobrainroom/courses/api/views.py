@@ -6,8 +6,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.core.exceptions import ValidationError
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from courses.models import Courses, Lessons, Progress
-from .serializers import CourseSerialiser, LessonSerializer
+from .serializers import CourseSerialiser, LessonSerializer, ProgressSerializer
 
 
 
@@ -110,6 +111,7 @@ def update_course(request):
 
 
 @api_view(['POST'])
+@staff_member_required
 def add_lesson(request):
     """
     Create a new lesson
@@ -150,11 +152,35 @@ def update_lesson(request):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+# Track the porgress of a user
 @api_view(['GET'])
-def get_progress(request, user_id):
+#@login_required
+def get_progress(request):
     """
-    Get the progess of a user
+    Get user progress summary
     """
-    if 
+    user = request.data.get('user')
+    if Progress.objects.filter(user=user).exists():
+        serializer = ProgressSerializer(Progress)
+        return Response(serializer.data)
+    
+    return Response({'User doesn\'t exist'})
+
+@api_view(['POST'])
+#@login_required
+def add_progress(request):
+    """
+    Mark lesson as complete
+    """
+    user = request.data.get('user')
+    if Progress.objects.filter(user=user).exists():
+        return Response({'Progress for this lesson already exists'})
+
+    new_progress = ProgressSerializer(data=request.data)
+    if new_progress.is_valid():
+        new_progress.save()
+    else:
+        raise ValidationError('Invalid data entered')
+    
+    return Response(new_progress.data)
 
