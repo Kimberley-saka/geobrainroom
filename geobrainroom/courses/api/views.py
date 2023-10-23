@@ -4,10 +4,12 @@ views
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from courses.models import Courses, Lessons, Progress
+from users.models import Users
 from .serializers import CourseSerialiser, LessonSerializer, ProgressSerializer
 
 
@@ -153,39 +155,34 @@ def update_lesson(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Track the porgress of a user
-@api_view(['GET'])
-#@login_required
-def get_progress(request):
-    """
-    Get user progress summary
-    """
-    user = request.data.get('user')
-    if Progress.objects.filter(user=user).exists():
-        serializer = ProgressSerializer(Progress)
+@api_view(['GET', 'POST'])
+def lesson_progress(request, user_id, lesson_id):
+    """Retrieve the user and lesson instances"""
+    user = get_object_or_404(Users, pk=user_id)
+    lesson = get_object_or_404(Lessons, pk=lesson_id)
+
+    if request.method == 'GET':
+        progress = Progress.objects.filter(user=user, lesson=lesson).first()
+        if not progress:
+            return Response({'Progress not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ProgressSerializer(progress)
         return Response(serializer.data)
-    
-    return Response({'User doesn\'t exist'})
 
-@api_view(['POST'])
-#@login_required
-def add_progress(request, user_id):
-    """
-    Mark lesson as complete
-    """
-    if Progress.objects.filter(user_id=user_id).exists():
-        return Response({'Progress for this lesson already exists'})
+    elif request.method == 'POST':
+        # Create or update progress
+        progress = Progress.objects.create(user=user, lesson=lesson)
 
-    new_progress = ProgressSerializer(data=request.data)
-    if new_progress.is_valid():
-        new_progress.save()
-    else:
-        raise ValidationError('Invalid data entered')
-    
-    return Response(new_progress.data)
+        progress.completed = True
+        progress.save()
 
+        serializer = ProgressSerializer(progress)
 
-@api_view(['GET'])
-def enrolled_in(request):
+        # Return the serialized data as a JSON response
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(['GET', 'POST'])
+def enroll_user(request):
     """
     Get the courses a user is enrolled in
     """

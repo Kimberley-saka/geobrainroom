@@ -49,6 +49,7 @@ class Enroll(models.Model):
         on_delete=models.CASCADE,
         blank=False
     )
+    enrolled =  models.BooleanField(null=True)
     enrolled_at = models.DateTimeField(auto_now_add=True)
 
 
