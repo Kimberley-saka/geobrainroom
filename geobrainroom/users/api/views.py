@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.contrib.auth.models import BaseUserManager
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.hashers import make_password
 #from django.contrib.admin.views.decorators import staff_member_required
@@ -33,6 +34,11 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serialize
     """
     serializer_class = MyTokenObtainPairSerializer
+
+    class CustomUserManager(BaseUserManager):
+        def get_by_natural_key(self, username):
+            return self.get(username=username)
+
 
 
 @api_view(['GET'])
