@@ -1,3 +1,4 @@
 ## GeoBrainRoom
 
-A platform where geography intersects with education.
+* An E-learning platform where learners can develop a profound understanding of Geographic
+  Information Systems (GIS), mapping techniques, and spatial analysis.

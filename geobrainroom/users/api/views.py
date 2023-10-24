@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.hashers import make_password
 #from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
 from .serializers import UserSerialiser
@@ -51,21 +52,32 @@ def get_routes(request):
 
 
 @api_view(['POST'])
-def add_user(request):
+def create_user(request):
     """
     create new user
     """
     username = request.data.get('username')
     email = request.data.get('email')
     password = request.data.get('password')
+
+    hashed_password = make_password(password)
+
+    user_data = {
+        'username': username,
+        'email': email,
+        'password': hashed_password
+    }
+
     
-    new_user = UserSerialiser(data=request.data) # Serialize the incoming data
+    
+    new_user = UserSerialiser(data=user_data) # Serialize the incoming data
     if new_user.is_valid(): #check if data passed is valid
         new_user.save()
 
     else:
         error = new_user.errors
-        return Response(f'Oops and error occured: {error}', status=status.HTTP_400_BAD_REQUEST)
+        return Response(f'Oops and error occured: {error}',
+                        status=status.HTTP_400_BAD_REQUEST)
     
     return Response(new_user.data)
 
