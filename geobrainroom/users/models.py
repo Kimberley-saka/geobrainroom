@@ -1,6 +1,6 @@
-from django.db import models
-from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.hashers import check_password
+from django.db import models
 
 
 class UserManager(BaseUserManager):
@@ -13,37 +13,49 @@ class UserManager(BaseUserManager):
         """
         return self.get(username=username)
     
-    def create_user(self, email, password=None, **kwargs):
+
+    def create_user(self, email, username, password=None):
         """
-        Create and return a regular user with an email and password
+        Creates and saves a User with the given email, username and password.
         """
-        user = self.model(email=email, **kwargs)
+        if not email:
+            raise ValueError('Users must have an email address')
+
+        user = self.model(
+            email=self.normalize_email(email),
+            username=username
+        )
+
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **kwargs):
-        # Create and return a superuser with an email and password
-        kwargs.setdefault('is_staff', True)
-        kwargs.setdefault('is_superuser', True)
-
-        if kwargs.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if kwargs.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
-
-        return self.create_user(email, password, **kwargs)
+    def create_superuser(self, username, email, password):
+        """
+        Creates and saves a superuser with the given email, username
+        and password.
+        """
+        user = self.create_user(
+            email,
+            username,
+            password=password,
+        )
+        user.is_admin = True
+        user.save(using=self._db)
+        return user
     
-class Users(models.Model):
+
+
+    
+class Users(AbstractBaseUser):
     """
     user db model definition
     """
     username = models.CharField(max_length=250, null=False, unique=True)
-    email = models.CharField(max_length=250, null=False)
+    email = models.CharField(max_length=250, null=False, unique=True)
     password = models.CharField(max_length=250, null=False)
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
     
 
 
@@ -69,6 +81,23 @@ class Users(models.Model):
 
     def get_by_natural_key(self, username):
         return self.get(username=username)
+    
+
+    def __str__(self):
+        return self.username
+
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+        return True
+
+    def has_module_perms(self, app_label):
+        "Does the user have permissions to view the app `app_label`?"
+        return True
+
+    @property
+    def is_staff(self):
+        "Is the user a member of staff?"
+        return self.is_admin
     
     class Meta:
         """

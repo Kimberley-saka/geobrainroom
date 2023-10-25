@@ -6,12 +6,11 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.contrib.auth.models import BaseUserManager
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.hashers import make_password
-#from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.models import User
+from django.contrib.admin.views.decorators import staff_member_required
 from .serializers import UserSerialiser
+from users.models import Users
 
 
 
@@ -34,11 +33,6 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serialize
     """
     serializer_class = MyTokenObtainPairSerializer
-
-    class CustomUserManager(BaseUserManager):
-        def get_by_natural_key(self, username):
-            return self.get(username=username)
-
 
 
 @api_view(['GET'])
@@ -74,7 +68,8 @@ def create_user(request):
         'password': hashed_password
     }
 
-    
+    if Users.objects.filter(username=username).exists():
+        return Response({'User already exists'})
     
     new_user = UserSerialiser(data=user_data) # Serialize the incoming data
     if new_user.is_valid(): #check if data passed is valid
@@ -88,16 +83,15 @@ def create_user(request):
     return Response(new_user.data)
 
 @api_view(['DELETE'])
-def delete_user(request, pk):
-    if pk is None or not isinstance(pk, int):
-            return Response({'Invalid or missing user ID'},
-                            status=status.HTTP_400_BAD_REQUEST)
-    try:
-        user = User.objects.get(pk=pk) # Search for user in db
-    except ObjectDoesNotExist:
-        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
-    user.delete()
+@staff_member_required
+def delete_user(request, id):
+    """
+    """
+    user = Users.objects.get(id=id)
+    if not user:
+        return Response({'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    user.delete
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['PUT'])
