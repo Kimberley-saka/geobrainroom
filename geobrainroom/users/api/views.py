@@ -58,7 +58,7 @@ def create_user(request):
     email = request.data.get('email')
    
     if Users.objects.filter(email=email).exists():
-        return Response({'User already exists'}, status=status.HTTP_409_CONFLICT)
+        return Response({'detail: User already exists'}, status=status.HTTP_409_CONFLICT)
     
     new_user = UserSerialiser(data=request.data) 
     new_user.is_valid(raise_exception=True) #check if data passed is valid
@@ -79,24 +79,24 @@ def login(request):
         return Response( {'detail: User not found'},
                         status=status.HTTP_404_NOT_FOUND)
     if not user.check_password(password): # Password doesnt match
-        return Response({'incorrect password'})
+        return Response({'detail: incorrect password'})
     
     authenticated_user = authenticate(request, email=user.email,
                                       password=password)
     
     if authenticated_user:
         login(request, authenticated_user)
-        token_serializer = MyTokenObtainPairSerializer(data=user)
+        token_serializer = MyTokenObtainPairSerializer(data={'username': user.username})
         token_serializer.is_valid(raise_exception=True)
 
         token = token_serializer.validated_data['access']
-        response = Response('Successfuly logged in')
+        response = Response('detail: Successfuly logged in')
 
         response.set_cookie('jwt_token', token)
 
         return response
-    
-    return Response({'Authentication failed'})
+    else:
+        return Response({'detail: Authentication failed'})
 
 @api_view(['DELETE'])
 @staff_member_required
