@@ -3,6 +3,7 @@ user api
 """
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth import authenticate, login
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -57,12 +58,12 @@ def create_user(request):
     email = request.data.get('email')
    
     if Users.objects.filter(email=email).exists():
-        return Response({'User already exists'})
+        return Response({'User already exists'}, status=status.HTTP_409_CONFLICT)
     
     new_user = UserSerialiser(data=request.data) 
     new_user.is_valid(raise_exception=True) #check if data passed is valid
     new_user.save()
-    return Response(new_user.data)
+    return Response(new_user.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
@@ -75,11 +76,27 @@ def login(request):
 
     user = Users.objects.filter(email=email).first()
     if not user:
-        return Response( {'detail: User not found'})
+        return Response( {'detail: User not found'},
+                        status=status.HTTP_404_NOT_FOUND)
     if not user.check_password(password): # Password doesnt match
         return Response({'incorrect password'})
     
-    return Response(user.data)
+    authenticated_user = authenticate(request, email=user.email,
+                                      password=password)
+    
+    if authenticated_user:
+        login(request, authenticated_user)
+        token_serializer = MyTokenObtainPairSerializer(data=user)
+        token_serializer.is_valid(raise_exception=True)
+
+        token = token_serializer.validated_data['access']
+        response = Response('Successfuly logged in')
+
+        response.set_cookie('jwt_token', token)
+
+        return response
+    
+    return Response({'Authentication failed'})
 
 @api_view(['DELETE'])
 @staff_member_required
