@@ -44,9 +44,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-
-
-    
+ 
 class Users(AbstractBaseUser):
     """
     user db model definition
@@ -64,24 +62,7 @@ class Users(AbstractBaseUser):
 
     objects = UserManager()
 
-    def check_password(self, raw_password):
-        """
-        check password
-        """
-        return check_password(raw_password, self.password)
-    
-    @property
-    def is_anonymous(self):
-        return False
-    
-    @property
-    def is_authenticated(self):
-        return True
-    
 
-    def get_by_natural_key(self, username):
-        return self.get(username=username)
-    
 
     def __str__(self):
         return self.username

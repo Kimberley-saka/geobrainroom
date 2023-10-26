@@ -56,9 +56,9 @@ def create_user(request):
     """
     create new user
     """
-    username = request.data.get('username')
+    email = request.data.get('email')
    
-    if Users.objects.filter(username=username).exists():
+    if Users.objects.filter(email=email).exists():
         return Response({'User already exists'})
     
     new_user = UserSerialiser(data=request.data) 
