@@ -57,30 +57,21 @@ def create_user(request):
     create new user
     """
     username = request.data.get('username')
-    email = request.data.get('email')
-    password = request.data.get('password')
-
-    hashed_password = make_password(password)
-
-    user_data = {
-        'username': username,
-        'email': email,
-        'password': hashed_password
-    }
-
+   
     if Users.objects.filter(username=username).exists():
         return Response({'User already exists'})
     
-    new_user = UserSerialiser(data=user_data) # Serialize the incoming data
-    if new_user.is_valid(): #check if data passed is valid
-        new_user.save()
-
-    else:
-        error = new_user.errors
-        return Response(f'Oops and error occured: {error}',
-                        status=status.HTTP_400_BAD_REQUEST)
-    
+    new_user = UserSerialiser(data=request.data) 
+    new_user.is_valid(raise_exception=True) #check if data passed is valid
+    new_user.save()
     return Response(new_user.data)
+
+
+@api_view(['POST'])
+def login(request):
+    """
+    Login a user
+    """
 
 @api_view(['DELETE'])
 @staff_member_required
@@ -91,7 +82,7 @@ def delete_user(request, id):
     if not user:
         return Response({'User not found'}, status=status.HTTP_404_NOT_FOUND)
     
-    user.delete
+    user.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['PUT'])
