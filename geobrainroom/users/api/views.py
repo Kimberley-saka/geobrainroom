@@ -6,8 +6,6 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.hashers import make_password
 from django.contrib.admin.views.decorators import staff_member_required
 from .serializers import UserSerialiser
 from users.models import Users
@@ -72,6 +70,16 @@ def login(request):
     """
     Login a user
     """
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    user = Users.objects.filter(email=email).first()
+    if not user:
+        return Response( {'detail: User not found'})
+    if not user.check_password(password): # Password doesnt match
+        return Response({'incorrect password'})
+    
+    return Response(user.data)
 
 @api_view(['DELETE'])
 @staff_member_required
