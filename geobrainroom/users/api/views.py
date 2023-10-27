@@ -65,39 +65,6 @@ def create_user(request):
     new_user.save()
     return Response(new_user.data, status=status.HTTP_201_CREATED)
 
-
-@api_view(['POST'])
-def login(request):
-    """
-    Login a user
-    """
-    email = request.data.get('email')
-    password = request.data.get('password')
-
-    user = Users.objects.filter(email=email).first()
-    if not user:
-        return Response( {'detail: User not found'},
-                        status=status.HTTP_404_NOT_FOUND)
-    if not user.check_password(password): # Password doesnt match
-        return Response({'detail: incorrect password'})
-    
-    authenticated_user = authenticate(request, email=user.email,
-                                      password=password)
-    
-    if authenticated_user:
-        login(request, authenticated_user)
-        token_serializer = MyTokenObtainPairSerializer(data={'username': user.username})
-        token_serializer.is_valid(raise_exception=True)
-
-        token = token_serializer.validated_data['access']
-        response = Response('detail: Successfuly logged in')
-
-        response.set_cookie('jwt_token', token)
-
-        return response
-    else:
-        return Response({'detail: Authentication failed'})
-
 @api_view(['DELETE'])
 @staff_member_required
 def delete_user(request, id):
