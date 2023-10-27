@@ -65,17 +65,11 @@ def create_user(request):
     new_user.save()
     return Response(new_user.data, status=status.HTTP_201_CREATED)
 
-@api_view(['DELETE'])
-@staff_member_required
-def delete_user(request, id):
+@api_view(['GET'])
+def get_user(request):
     """
+    get an authenticated user
     """
-    user = Users.objects.get(id=id)
-    if not user:
-        return Response({'User not found'}, status=status.HTTP_404_NOT_FOUND)
-    
-    user.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['PUT'])
 def update_password(request):
