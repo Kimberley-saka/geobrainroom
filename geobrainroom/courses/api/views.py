@@ -86,6 +86,7 @@ def remove_course(request):
     delete a course
     """
     course_name = request.data.get('course_name')
+
     course = Courses.objects.filter(course_name=course_name).first()
 
     if course is None:
@@ -93,7 +94,7 @@ def remove_course(request):
                         status=status.HTTP_404_NOT_FOUND)
     
     course.delete()
-    return Response({'detail: Course deleted'})
+    return Response({'detail: Course deleted'}, status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])
@@ -112,6 +113,24 @@ def update_course(request, id):
         return Response(serializer.data)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def remove_course(request):
+    """
+    delete a course
+    """
+    course_name = request.data.get('course_name')
+
+    course = Courses.objects.filter(course_name=course_name).first()
+
+    if course is None:
+        return Response({'detail: Course not found or doesnt exist'},
+                        status=status.HTTP_404_NOT_FOUND)
+    
+    course.delete()
+    return Response({'detail: Course deleted'}, status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['POST'])
@@ -152,15 +171,13 @@ def get_specific_lesson(request, id):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])
-def update_lesson(request):
+def update_lesson(request, id):
     """
     Update data
     """
-    lesson_name = request.data.get('lesson_name')
+    lesson = Lessons.objects.get(id=id)
 
-    try:
-        lesson = Lessons.objects.get(lesson_name=lesson_name)
-    except Lessons.DoesNotExist:
+    if lesson is None:
         return Response({'error': 'lesson doesnt exist'}, status=status.HTTP_400_BAD_REQUEST)
 
     serializer = LessonSerializer(lesson, data=request.data)
