@@ -232,21 +232,36 @@ def lesson_progress(request, user_id, lesson_id):
         # Return the serialized data as a JSON response
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def enroll_in_course(request):
     """
     enroll
     """
-    if request.method == 'POST':
-        user_id = request.data.get('user_id')
-        course_id = request.data.get('course_id')
-        
-        if Enroll.objects.filter(user_id=user_id, course_id=course_id).exists():
-            return Response({'detail: user already enrolled in course'})
-        
-        serializer = EnrollSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-        
+    
+    user_id = request.data.get('user_id')
+    course_id = request.data.get('course_id')
+    
+    if Enroll.objects.filter(user_id=user_id, course_id=course_id).exists():
+        return Response({'detail: user already enrolled in course'})
+    
+    serializer = EnrollSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_course_name_enrolled(request, id):
+    """
+    retrieve a course a user is enrolled in given enrollement id
+    """
+    enroll = Enroll.objects.get(id=id)
+    if enroll is None:
+        return Response({'detail: Not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    course_name = enroll.course_id.course_name
+
+    return Response(course_name)
+
