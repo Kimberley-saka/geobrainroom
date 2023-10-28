@@ -33,6 +33,11 @@ class Lessons(models.Model):
     description = models.TextField(max_length=1000, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
+
+    def __str__(self):
+        return self.lesson_name
+        
+
  
     class Meta:
         db_table = 'lessons'
@@ -81,7 +86,7 @@ class Progress(models.Model):
         blank=False
     )
 
-    completed = models.BooleanField(null=True)
+    completed = models.BooleanField(default=True)
     completed_at = models.DateTimeField(auto_now_add=True)
 
 

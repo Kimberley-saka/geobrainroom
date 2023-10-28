@@ -205,32 +205,42 @@ def remove_lesson(request, id):
     return Response({'detail: Losson deleted'}, status=status.HTTP_204_NO_CONTENT)
 
 # Track the porgress of a user
-@api_view(['GET', 'POST'])
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_progress(request):
+    """
+    add progress
+    """
+    user = request.data.get('user_id')
+    lesson = request.data.get('lesson_id')
+
+    if Progress.objects.filter(user=user, lesson=lesson).exists():
+        return Response({'Lesson already completed'})
+    
+    progress = {
+        "user": user,
+        "lesson": lesson 
+    }
+
+    serializer = ProgressSerializer(data=progress)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        # Return the serialized data as a JSON response
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def lesson_progress(request, user_id, lesson_id):
     """Retrieve the user and lesson instances"""
-    user = get_object_or_404(Users, pk=user_id)
-    lesson = get_object_or_404(Lessons, pk=lesson_id)
+    progress = Progress.objects.filter(user=user_id, lesson=lesson_id).first()
+    if not progress:
+        return Response({'Progress not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'GET':
-        progress = Progress.objects.filter(user=user, lesson=lesson).first()
-        if not progress:
-            return Response({'Progress not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ProgressSerializer(progress)
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        # Create or update progress
-        progress = Progress.objects.create(user=user, lesson=lesson)
-
-        progress.completed = True
-        progress.save()
-
-        serializer = ProgressSerializer(progress)
-
-        # Return the serialized data as a JSON response
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    serializer = ProgressSerializer(progress)
+    return Response(serializer.data)
+    
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -248,16 +258,16 @@ def enroll_in_course(request):
     serializer = EnrollSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         serializer.save()
-        return Response(serializer.data)
+        return Response({'detail: sucessfully enrolled'})
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_course_name_enrolled(request, id):
+def get_course_name_enrolled(request, user_id):
     """
-    retrieve a course a user is enrolled in given enrollement id
+    retrieve a course a user is enrolled in given user_id
     """
-    enroll = Enroll.objects.get(id=id)
+    enroll = Enroll.objects.get(user_id=user_id)
     if enroll is None:
         return Response({'detail: Not found'}, status=status.HTTP_404_NOT_FOUND)
     
