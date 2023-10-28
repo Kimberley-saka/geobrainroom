@@ -92,15 +92,15 @@ def add_course(request):
     return Response(new_course.data)
 
 @api_view(['PUT'])
-@permission_classes([IsAuthenticated])
-def update_course(request):
+@permission_classes([IsAuthenticated, IsAdminUser])
+def update_course(request, course_id):
     """
     Update data
     """
-    course_name = request.data.get('course_name')
+    course_id = request.data.get('course_id')
 
     try:
-        course = Courses.objects.get(course_name=course_name)
+        course = Courses.objects.get(course_id=id)
     except Courses.DoesNotExist:
         return Response({'error': 'Course does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -113,6 +113,7 @@ def update_course(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated, IsAdminUser])
 def add_lesson(request):
     """
     Create a new lesson
@@ -134,7 +135,7 @@ def add_lesson(request):
 
 
 @api_view(['PUT'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdminUser])
 def update_lesson(request):
     """
     Update data
