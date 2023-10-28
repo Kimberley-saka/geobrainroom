@@ -187,6 +187,23 @@ def update_lesson(request, id):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def remove_lesson(request, id):
+    """
+    delete a course
+    """
+    
+    lesson = Lessons.objects.filter(id=id).first()
+
+    if lesson is None:
+        return Response({'detail: Lesson not found or doesnt exist'},
+                        status=status.HTTP_404_NOT_FOUND)
+    
+    lesson.delete()
+    return Response({'detail: Losson deleted'}, status=status.HTTP_204_NO_CONTENT)
+
 # Track the porgress of a user
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
