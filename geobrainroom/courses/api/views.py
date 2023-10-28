@@ -42,7 +42,7 @@ def get_specific_course(request, id):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def get_lessons(request, course_id):
+def course_lessons(request, course_id):
     """
     Gets a list of lessons in a course
     """
@@ -93,15 +93,13 @@ def add_course(request):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])
-def update_course(request, course_id):
+def update_course(request, id):
     """
     Update data
     """
-    course_id = request.data.get('course_id')
-
-    try:
-        course = Courses.objects.get(course_id=id)
-    except Courses.DoesNotExist:
+    course = Courses.objects.filter(id=id).first()
+    
+    if course is None:
         return Response({'error': 'Course does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
     serializer = CourseSerialiser(course, data=request.data)
