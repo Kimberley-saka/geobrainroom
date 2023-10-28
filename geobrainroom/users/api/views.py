@@ -77,7 +77,7 @@ def get_user_profile(request):
     return Response(serializer.data)
 
 @api_view(['PUT'])
-def update_password(request):
+def reset_password(request):
     """
     __summary__
     """

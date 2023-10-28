@@ -1,12 +1,12 @@
 """
 views
 """
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from courses.models import Courses, Lessons, Progress
 from users.models import Users
@@ -72,7 +72,7 @@ def get_specific_lesson(request, id):
 
 
 @api_view(['POST'])
-#@staff_member_required
+@permission_classes([IsAuthenticated, IsAdminUser])
 def add_course(request):
     """
     Create new course
@@ -92,7 +92,7 @@ def add_course(request):
     return Response(new_course.data)
 
 @api_view(['PUT'])
-# @staff_member_required
+@permission_classes([IsAuthenticated])
 def update_course(request):
     """
     Update data
@@ -113,7 +113,6 @@ def update_course(request):
 
 
 @api_view(['POST'])
-@staff_member_required
 def add_lesson(request):
     """
     Create a new lesson
@@ -135,7 +134,7 @@ def add_lesson(request):
 
 
 @api_view(['PUT'])
-# @staff_member_required
+@permission_classes([IsAuthenticated])
 def update_lesson(request):
     """
     Update data
@@ -156,6 +155,7 @@ def update_lesson(request):
 
 # Track the porgress of a user
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def lesson_progress(request, user_id, lesson_id):
     """Retrieve the user and lesson instances"""
     user = get_object_or_404(Users, pk=user_id)
@@ -182,6 +182,7 @@ def lesson_progress(request, user_id, lesson_id):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def enroll_user(request):
     """
     Get the courses a user is enrolled in
