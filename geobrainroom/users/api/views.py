@@ -3,11 +3,11 @@ user api
 """
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth import authenticate, login
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.contrib.admin.views.decorators import staff_member_required
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import UserSerialiser
 from users.models import Users
 
@@ -66,10 +66,15 @@ def create_user(request):
     return Response(new_user.data, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
-def get_user(request):
+@permission_classes([IsAuthenticated])
+def get_user_profile(request):
     """
     get an authenticated user
     """
+    authentication_classes = [JWTAuthentication]
+    user = request.user
+    serializer = UserSerialiser(user, many=False)
+    return Response(serializer.data)
 
 @api_view(['PUT'])
 def update_password(request):

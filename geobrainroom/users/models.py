@@ -1,4 +1,4 @@
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.hashers import check_password
 from django.db import models
 
@@ -57,8 +57,8 @@ class Users(AbstractBaseUser):
     
 
 
-    REQUIRED_FIELDS = [ 'username', 'password']
-    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = [ 'email', 'password']
+    USERNAME_FIELD = 'username'
 
     objects = UserManager()
 
