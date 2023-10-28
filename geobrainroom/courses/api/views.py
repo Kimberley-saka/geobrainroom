@@ -57,19 +57,6 @@ def course_lessons(request, course_id):
     serializer = LessonSerializer(lessons, many=True)
     return Response(serializer.data)
 
-@api_view(['GET'])
-def get_specific_lesson(request, id):
-    """
-    Retrieve contents of a lesson
-    """
-    lesson = Lessons.objects.filter(id=id).first()
-
-    if not lesson:
-        return Response('Lesson not found', status.HTTP_404_NOT_FOUND)
-
-    serializer = LessonSerializer(lesson)
-    return Response(serializer.data)
-
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsAdminUser])
@@ -90,6 +77,23 @@ def add_course(request):
         raise ValidationError('Invalid data entered')
     
     return Response(new_course.data)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def remove_course(request):
+    """
+    delete a course
+    """
+    course_name = request.data.get('course_name')
+    course = Courses.objects.filter(course_name=course_name).first()
+
+    if course is None:
+        return Response({'detail: Course not found or doesnt exist'},
+                        status=status.HTTP_404_NOT_FOUND)
+    
+    course.delete()
+    return Response({'detail: Course deleted'})
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])
@@ -130,6 +134,20 @@ def add_lesson(request):
         raise ValidationError('Invalid data entered')
     
     return Response(new_lesson.data)
+
+
+@api_view(['GET'])
+def get_specific_lesson(request, id):
+    """
+    Retrieve contents of a lesson
+    """
+    lesson = Lessons.objects.filter(id=id).first()
+
+    if not lesson:
+        return Response('Lesson not found', status.HTTP_404_NOT_FOUND)
+
+    serializer = LessonSerializer(lesson)
+    return Response(serializer.data)
 
 
 @api_view(['PUT'])
