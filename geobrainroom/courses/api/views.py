@@ -7,10 +7,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
-from django.contrib.auth.decorators import login_required
-from courses.models import Courses, Lessons, Progress
+from courses.models import (Courses, Lessons, Progress, Enroll)
 from users.models import Users
-from .serializers import CourseSerialiser, LessonSerializer, ProgressSerializer
+from .serializers import (CourseSerialiser, LessonSerializer,
+                          ProgressSerializer, EnrollSerializer)
 
 
 
@@ -234,8 +234,19 @@ def lesson_progress(request, user_id, lesson_id):
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
-def enroll_user(request):
+def enroll_in_course(request):
     """
-    Get the courses a user is enrolled in
+    enroll
     """
-    pass
+    if request.method == 'POST':
+        user_id = request.data.get('user_id')
+        course_id = request.data.get('course_id')
+        
+        if Enroll.objects.filter(user_id=user_id, course_id=course_id).exists():
+            return Response({'detail: user already enrolled in course'})
+        
+        serializer = EnrollSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        

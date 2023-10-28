@@ -17,4 +17,5 @@ urlpatterns = [
     path('lessons/<int:id>/', views.get_specific_lesson),
     path('lessons/delete/<int:id>/', views.remove_lesson),
     path('user/<int:user_id>/lessons/<lesson_id>/progress', views.lesson_progress),
+    path('enrolled/', views.enroll_in_course)
 ]

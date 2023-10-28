@@ -12,6 +12,9 @@ class Courses(models.Model):
     description = models.TextField(max_length=1000, null=True)
     created_at = models.DateTimeField(auto_now_add=True, unique=True)
 
+    def __str__(self):
+        return self.course_name
+
 
     class Meta:
         db_table = 'courses'
@@ -21,7 +24,7 @@ class Lessons(models.Model):
     """
     __summary__
     """
-    course = models.ForeignKey(
+    course_id = models.ForeignKey(
         Courses,
         on_delete=models.CASCADE,
         blank=False
@@ -39,18 +42,23 @@ class Enroll(models.Model):
     """
     __summary__
     """
-    user = models.ForeignKey(
+    user_id = models.ForeignKey(
         Users,
         on_delete=models.CASCADE,
         blank=False
     )
-    course = models.ForeignKey(
+    course_id = models.ForeignKey(
         Courses,
         on_delete=models.CASCADE,
         blank=False
     )
-    enrolled =  models.BooleanField(null=True)
+    enrolled =  models.BooleanField(default=True)
     enrolled_at = models.DateTimeField(auto_now_add=True)
+
+
+    def __str__(self):
+        return f"Uername: {self.user_id.username} Course_enrolled: {self.course_id.name}"
+        
 
 
     class Meta:

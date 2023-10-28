@@ -37,13 +37,13 @@ class ProgressSerializer(serializers.ModelSerializer):
         model = Progress
         fields = '__all__'
 
-    class EnrollSerializer(serializers.ModelSerializer):
+class EnrollSerializer(serializers.ModelSerializer):
+    """
+    enroll db_table serializer
+    """
+    class Meta:
         """
-        enroll db_table serializer
+        __summary__
         """
-        class Meta:
-            """
-            __summary__
-            """
-            model = Enroll
-            fields = '__all__'
+        model = Enroll
+        fields = '__all__'
