@@ -43,10 +43,25 @@ def get_routes(request):
     routes = [
         'api/token',
         'api/token/refresh',
-        'api/courses',
-        'api/courses/add',
+        'create/',
+        'profile/',
+        'logout/',
+        'api/courses/',
+        'api/courses/add/',
+        'api/courses/<int:id>/',
+        'api/courses/<int:course_id>/lessons/',
+        'api/courses/update/<int:id>',
         'api/courses/<int:pk>/delete',
         'api/courses/<int:pk>/lessons/',
+        'api/lessons/add/',
+        'api/lessons/update/<int:id>/',
+        'api/lessons/<int:id>/',
+        'api/lessons/delete/<int:id>/',
+        'api/enroll/',
+        'api/enroll/course/<int:user_id>/',
+        'api/progress/add/',
+        'lessons/progress/<int:user_id>/<lesson_id>/',
+        'lessons/progress/<int:user_id>/'
     ]
     return Response(routes)
 
@@ -77,11 +92,9 @@ def get_user_profile(request):
     serializer = UserSerialiser(user, many=False)
     return Response(serializer.data)
 
+""""
 @api_view(['PUT'])
 def reset_password(request):
-    """
-    __summary__
-    """
     email = request.data.get('email', None)
     password = request.data.get('password', None)
 
@@ -91,6 +104,8 @@ def reset_password(request):
     if password is None or not isinstance(password, str):
         return Response({'Invalid or missing user password'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+    """
                             
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
