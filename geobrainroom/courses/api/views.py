@@ -233,13 +233,27 @@ def create_progress(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def lesson_progress(request, user_id, lesson_id):
-    """Retrieve the user and lesson instances"""
+    """Retrieve the user and lesson instances progress"""
     progress = Progress.objects.filter(user=user_id, lesson=lesson_id).first()
     if not progress:
         return Response({'Progress not found'}, status=status.HTTP_404_NOT_FOUND)
 
     serializer = ProgressSerializer(progress)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_completed_lessons(request, user_id):
+    """
+    get the lessons completed give user_id
+    """
+    completed_lessons = Lessons.objects.filter(user=user_id)
+    if completed_lessons is None:
+        return Response({'detail: No completed lesson for this user'}, 
+                        status=status.HTTP_404_NOT_FOUND)
+    lesson_serializer = LessonSerializer(completed_lessons)
+    return Response(lesson_serializer.data)
     
 
 @api_view(['POST'])
