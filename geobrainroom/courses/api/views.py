@@ -248,12 +248,12 @@ def get_completed_lessons(request, user_id):
     """
     get the lessons completed give user_id
     """
-    completed_lessons = Lessons.objects.filter(user=user_id)
+    completed_lessons = Progress.objects.get(user=user_id)
     if completed_lessons is None:
         return Response({'detail: No completed lesson for this user'}, 
                         status=status.HTTP_404_NOT_FOUND)
-    lesson_serializer = LessonSerializer(completed_lessons)
-    return Response(lesson_serializer.data)
+    lessons = completed_lessons.lesson.lesson_name
+    return Response({lessons})
     
 
 @api_view(['POST'])
@@ -287,5 +287,4 @@ def get_course_name_enrolled(request, user_id):
     
     course_name = enroll.course_id.course_name
 
-    return Response(course_name)
-
+    return Response({course_name})
