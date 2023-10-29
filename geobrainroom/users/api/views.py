@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserSerialiser
 from users.models import Users
 
@@ -42,10 +43,10 @@ def get_routes(request):
     routes = [
         'api/token',
         'api/token/refresh',
-        'api/add',
-        'api/<int:pk>/delete',
-        '/api/courses',
-        'courses/<int:pk>/lessons/',
+        'api/courses',
+        'api/courses/add',
+        'api/courses/<int:pk>/delete',
+        'api/courses/<int:pk>/lessons/',
     ]
     return Response(routes)
 
@@ -91,3 +92,23 @@ def reset_password(request):
         return Response({'Invalid or missing user password'},
                             status=status.HTTP_400_BAD_REQUEST)
                             
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout(request):
+    """
+    Logout
+    """
+    refresh_token = request.data.get('refresh')
+
+    if refresh_token:
+        # Revoke the refresh token
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({'detail': 'Successfully logged out.'},
+                            status=status.HTTP_200_OK)
+        except refresh_token.DoesNotExist:
+            return Response({'detail': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response({'detail': 'Refresh token is required'}, 
+                        status=status.HTTP_400_BAD_REQUEST)
