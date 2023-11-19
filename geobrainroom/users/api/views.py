@@ -43,16 +43,15 @@ def get_routes(request):
     routes = [
         'api/token',
         'api/token/refresh',
-        'create/',
-        'profile/',
-        'logout/',
+        'api/register/',
+        'api/profile/',
+        'api/logout/',
         'api/courses/',
         'api/courses/add/',
         'api/courses/<int:id>/',
         'api/courses/<int:course_id>/lessons/',
-        'api/courses/update/<int:id>',
-        'api/courses/<int:pk>/delete',
-        'api/courses/<int:pk>/lessons/',
+        'api/courses/update/<int:id>/',
+        'api/courses/delete/',
         'api/lessons/add/',
         'api/lessons/update/<int:id>/',
         'api/lessons/<int:id>/',
@@ -67,7 +66,7 @@ def get_routes(request):
 
 
 @api_view(['POST'])
-def create_user(request):
+def register_user(request):
     """
     create new user
     """
@@ -117,13 +116,10 @@ def logout(request):
 
     if refresh_token:
         # Revoke the refresh token
-        try:
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response({'detail': 'Successfully logged out.'},
-                            status=status.HTTP_200_OK)
-        except refresh_token.DoesNotExist:
-            return Response({'detail': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+        return Response({'detail': 'Successfully logged out.'},
+                        status=status.HTTP_200_OK)
     else:
         return Response({'detail': 'Refresh token is required'}, 
                         status=status.HTTP_400_BAD_REQUEST)

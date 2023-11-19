@@ -115,24 +115,6 @@ def update_course(request, id):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated, IsAdminUser])
-def remove_course(request):
-    """
-    delete a course
-    """
-    course_name = request.data.get('course_name')
-
-    course = Courses.objects.filter(course_name=course_name).first()
-
-    if course is None:
-        return Response({'detail: Course not found or doesnt exist'},
-                        status=status.HTTP_404_NOT_FOUND)
-    
-    course.delete()
-    return Response({'detail: Course deleted'}, status=status.HTTP_204_NO_CONTENT)
-
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def add_lesson(request):
@@ -202,7 +184,7 @@ def remove_lesson(request, id):
                         status=status.HTTP_404_NOT_FOUND)
     
     lesson.delete()
-    return Response({'detail: Losson deleted'}, status=status.HTTP_204_NO_CONTENT)
+    return Response({'detail: Lesson deleted'}, status=status.HTTP_204_NO_CONTENT)
 
 # Track the porgress of a user
 
@@ -279,7 +261,7 @@ def enroll_in_course(request):
 @permission_classes([IsAuthenticated])
 def get_course_name_enrolled(request, user_id):
     """
-    retrieve a course a user is enrolled in given user_id
+    retrieve courses a user is enrolled in given user_id
     """
     enroll = Enroll.objects.get(user_id=user_id)
     if enroll is None:
