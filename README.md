@@ -10,10 +10,9 @@ and be able to contribute to crowd-sourcing platforms like <a href="https://www.
 response efforts in every form and help those in need.
 
 ### Getting started
-'''bash
+
     git clone url
     
-'''
 
 ### Usage
 
