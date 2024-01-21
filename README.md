@@ -6,7 +6,7 @@
 ### Motivation
 Geospatial data plays an important role in managing the risks associated with natural disasters. 
 I believe that individuals should have a basic understanding of Geographic Information Systems (GIS) 
-and be able to contribute to crowd-sourcing platforms like OpenStreetMap. This will aid in emergency 
+and be able to contribute to crowd-sourcing platforms like <a href="https://www.openstreetmap.org/#map=6/-13.277/34.295">OpenStreetMap</a>. This will aid in emergency 
 response efforts in every form and help those in need.
 
 ### Getting started
