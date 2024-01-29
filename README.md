@@ -18,13 +18,13 @@ response efforts in every form and help those in need.
 
 ### Wanna run it in your local machine?
 
-  * git clone https://github.com/Kimberley-saka/geobrainroom
-  * cd geobrainroom
-  * Create a virtual envrioment
-    python -m venv newenv
-    source newenv/bin/activate
-  * pip install -r requirements.txt
-  * python manage.py runserver
+  1. git clone https://github.com/Kimberley-saka/geobrainroom
+  2. cd geobrainroom
+  3. Create a virtual environment:
+    * python -m venv newenv
+    * source newenv/bin/activate
+  4. pip install -r requirements.txt
+  5. python manage.py runserver
         
     
 
