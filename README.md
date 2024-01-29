@@ -19,7 +19,7 @@ response efforts in every form and help those in need.
 ### Wanna run it in your local machine?
 
   * git clone https://github.com/Kimberley-saka/geobrainroom
-  * cd geobranroom
+  * cd geobrainroom
   * Create a virtual envrioment
     python -m venv newenv
     source newenv/bin/activate
